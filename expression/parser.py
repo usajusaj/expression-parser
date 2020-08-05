@@ -20,6 +20,8 @@ limitations under the License.
 from __future__ import division
 import ast
 
+
+# noinspection PyPep8Naming
 class Expression_Parser(ast.NodeVisitor):
     """
     Transformer that safely parses an expression, disallowing any complicated
@@ -214,6 +216,9 @@ class Expression_Parser(ast.NodeVisitor):
         raise SyntaxError('Node {} not allowed'.format(ast.dump(node)),
                           ('', node.lineno, node.col_offset, ''))
 
+    def visit_Attribute(self, node):
+        return getattr(self.visit(node.value), node.attr)
+
     def visit_Module(self, node):
         """
         Visit the root module node.
@@ -376,7 +381,7 @@ class Expression_Parser(ast.NodeVisitor):
             raise SyntaxError('Star arguments are not supported',
                               ('', node.lineno, node.col_offset, ''))
 
-        return (node.arg, self.visit(node.value))
+        return node.arg, self.visit(node.value)
 
     def visit_Num(self, node):
         """
